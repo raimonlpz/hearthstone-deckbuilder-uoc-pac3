@@ -15,14 +15,14 @@ Mètode per a extreure la data dels diferents selectors de cartes i els seus val
 -inici sessió- cridem a la API, sinó guardem ja la data al deckBuilder i fem la comprovació.
 */
 export async function getInfoApi() {
-    let optionsAlreadyFetched = myDeck.getSelectorsOptions();
+    let optionsAlreadyFetched = myDeck.selectorsOptions;
     if (optionsAlreadyFetched) {
         return optionsAlreadyFetched;
     }
     let infoApi = await getEndpoint(`${API_ENDPOINT.INFO}`);
     let selectorsInfo = arrangeSelectors(infoApi);
-    myDeck.saveSelectorsOptions(selectorsInfo);
-    return myDeck.getSelectorsOptions();
+    myDeck.selectorsOptions = selectorsInfo;
+    return myDeck.selectorsOptions;
 }
 
 /*
@@ -76,7 +76,7 @@ export async function getCardById(cardId) {
 
 /*
 Mètode per filtrar les cartes pels altres selectors disponibles. Podem observar com aquí no cridem a la API de cap de les
-maneres, ja que és més òptim filtrar les cartes partint sempre d'una classe seleccionada prèviament. Així
+maneres, ja que és més òptim filtrar les cartes partint sempre d'un filtre base seleccionat prèviament. Així
 fem el filtratge sobre les cartes guardades al nostre DeckBuilder i evitem peticions innecessàries.
 El mètode accepta dos paràmetres que seràn poblats per la pròpia interacció dels usuaris amb els inputs dels formulari
 i les seves opcions -mirar interfície-. 
@@ -88,33 +88,34 @@ export function filterCards(selector, value) {
 }
 
 /*
-Mètode que recupera els selectors específics de l'última de les cerques, ens permet extreure la data de cara a
-renderitzar-la a la pantalla (i millorar l'experiència d'usuari).
+Mètode que recupera els selectors específics de l'última de les cerques.
 */
 export function getSelectors() {
-    return myDeck.getSelectors();
+    return myDeck.getCurrentSelectors();
 }
 
+/*
+Mètodes per a permetre a l'usuari crear un deck personalitzat. 
+*/
 export function addCardToDeck(newCard) {
     myDeck.addCardToDeck(newCard);
 }
-
 export function deleteCardFromDeck(idCard) {
     myDeck.deleteCardFromDeck(idCard);
 }
-
 export function getCardsFromDeck() {
     return myDeck.getDeckOfCards();
 }
 
+/*
+Mètodes per fer 'tracking' del selector Base/Zero. A partir del qual aplicar la resta de filtres.
+*/
 export function getSelectorZero() {
-    return myDeck.getSelectorZero();
+    return myDeck.selectorZero;
 }
-
 export function setSelectorZero(newSelectorBase) {
-    myDeck.setSelectorZero(newSelectorBase);
+    myDeck.selectorZero = newSelectorBase;
 }
-
 export function realocateFilterZero(selector) {
     return myDeck.realocateFilterZero(selector);
 }

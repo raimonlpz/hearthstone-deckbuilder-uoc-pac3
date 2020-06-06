@@ -1,7 +1,7 @@
 /*
 Script amb configuració sensible sobre els tokens/keys de la API utilitzada, els headers de la petició
-http GET i el mètode fetch amb la resposta resultant, que permet abstreure part de la lògica 
-a l'hora d'utilitzar els endpoints a 'api.js'. 
+http i el mètode fetch amb la resposta resultant, que permet abstreure part de la lògica a l'hora d'utilitzar 
+els endpoints a 'api.js'. 
 */
 const API = 'omgvamp-hearthstone-v1.p.rapidapi.com';
 const API_KEY = 'c927399b70msh4da279bb07305eep1d2804jsnafa5a01f46df';

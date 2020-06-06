@@ -1,12 +1,18 @@
 import { getCardsByFilterZero, getCardById, getInfoApi, getSelectors, filterCards, addCardToDeck, deleteCardFromDeck, getCardsFromDeck, getSelectorZero, setSelectorZero, realocateFilterZero } from './api.js';
 
+/*
+Aquí capturem els diferents inputs de l'aplicació i hi afegim listeners que permetran a l'usuari interactuar
+amb els selectors disponibles i combinar-los per a cercar cartes amb propietats específiques, i crear un deck personalitzat.
+*/
 const $deckDisplayer = document.getElementById('hearthStone_cardSelector');
 const $cardSummaryStats = document.getElementById('hearthStone_cardSummaryStats');
 const $deckBuilderCards = document.getElementById('hearthStone_deckBuilderCards');
 const $classesSelectorOptions = document.getElementById('hearthStone_sidebarSelectors');
 
 let optionsSetUp = false;
-
+/*
+Punt d'entrada de l'aplicació.
+*/
 export default async function init() {
     renderPlaceholder();
     if (!optionsSetUp) {
@@ -17,6 +23,9 @@ export default async function init() {
     console.log(_selectors);
 }
 
+/*
+Mètode per aplicar listeneres als diferents selectors que permetran a l'usuari filtrar les cartes.
+*/
 function listenToSelectors(filter) {
     const $typeCard = document.getElementById(filter);
     $typeCard.addEventListener('change', (e) => {
@@ -26,6 +35,9 @@ function listenToSelectors(filter) {
     });
 }
 
+/*
+Mètodes renderitzadors per les diferents parts de la UI.
+*/
 function renderPlaceholder() {
     return $deckDisplayer.innerHTML = `<div class="placeholder-zero-results">
     <img class="imagedec" src="https://d30itml3t0pwpf.cloudfront.net/api/v3/medias/12450786/image/original/1503526057.png">
@@ -58,7 +70,6 @@ async function renderSelectors() {
         $classesSelectorOptions.appendChild(selectEl);
         listenToSelectors(filter);
     });
-
     console.log('INFO GAME:');
     console.table(infoGame);
 }
@@ -88,8 +99,17 @@ function renderUpdatesInDeck() {
     }
 }
 
-let isInitialFiltering = true;
+function renderInfoCardHovered(_key, cardHovered, cardSummaryStats) {
+    let keyEl = document.createElement('li');
+    keyEl.innerHTML = `${_key.toUpperCase()}: ${cardHovered[_key]}`;
+    cardSummaryStats.appendChild(keyEl);
+}
 
+let isInitialFiltering = true;
+/*
+Per cada nova opció de filtrat seleccionada, el mètode 'renderImgGrid' es reactiva i efectua un nou filtratge. 
+Podem veure com el mètode accepta dos paràmetres, primer el tipus de selector i després el valor específic.
+*/
 async function renderImgGrid(selector, value) {
     $deckDisplayer.innerHTML = '<div class="loader">Loading...</div>';
 
@@ -101,7 +121,7 @@ async function renderImgGrid(selector, value) {
 
     if (selector == getSelectorZero()) {
         if (value == 'all') {
-            filterCards(selector, value); // & update selectors
+            filterCards(selector, value); /* actualitza estat dels selectors */
             let infoSelectors = getSelectors();
             let selectors = Object.keys(infoSelectors);
             let allSelectorsAreAll = true;
@@ -145,7 +165,9 @@ async function renderImgGrid(selector, value) {
             renderUpdatesInDeck();
         });
 
-        /* CARD SUMMARY */
+        /* 
+        Card Summary 
+        */
         img.addEventListener('mouseover', async (e) => {
             let cardHovered = await getCardById(e.target.id);
             $cardSummaryStats.innerHTML = '';
@@ -164,8 +186,3 @@ async function renderImgGrid(selector, value) {
     return filteredCards;
 }
 
-function renderInfoCardHovered(_key, cardHovered, cardSummaryStats) {
-    let keyEl = document.createElement('li');
-    keyEl.innerHTML = `${_key.toUpperCase()}: ${cardHovered[_key]}`;
-    cardSummaryStats.appendChild(keyEl);
-}

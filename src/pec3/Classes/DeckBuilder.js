@@ -8,14 +8,7 @@ export default class DeckBuilder {
         this.fetchedFiltersList = [];
         this.gameSelectorsOptions;
         this.selectorBase;
-        this.selectors = {
-            classes: 'all',
-            sets: 'all',
-            types: 'all',
-            factions: 'all',
-            qualities: 'all',
-            races: 'all'
-        };
+        this.selectors = { classes: 'all', sets: 'all', types: 'all', factions: 'all', qualities: 'all', races: 'all' };
         this.relationSelectorsInCardAttrb = {
             classes: 'playerClass',
             sets: 'cardSet',
@@ -26,30 +19,26 @@ export default class DeckBuilder {
         }
     }
 
-    getSelectorZero() {
+    get selectorZero() {
         return this.selectorBase;
     }
-    setSelectorZero(newSelectorBase) {
+    set selectorZero(newSelectorBase) {
         this.selectorBase = newSelectorBase;
     }
 
-    /*
-    Getter per als selectors utilitzats en una cerca específica
-    */
-    getSelectors() {
-        return this.selectors;
-    }
-
-    saveSelectorsOptions(infoSelectors) {
-        this.gameSelectorsOptions = infoSelectors;
-    }
-    getSelectorsOptions() {
+    get selectorsOptions() {
         return this.gameSelectorsOptions;
     }
+    set selectorsOptions(infoSelectors) {
+        this.gameSelectorsOptions = infoSelectors;
+    }
 
+    getCurrentSelectors() {
+        return this.selectors;
+    }
     /*
-    Mètodes per afegir cartes i -noms de- classes al caché de la sessió. D'aquesta manera resulta més fàcil comprovar que 
-    una classe determinada ja ha estat obtinguda de la API i recuperar per tant les cartes de la mateixa.
+    Mètodes per afegir cartes i -noms de- filtres al caché de la sessió. D'aquesta manera resulta més fàcil comprovar que 
+    una filtre determinat ja ha estat obtingut de la API i recuperar per tant les cartes del mateix.
     */
     addFilterToCache(newFilter) {
         this.fetchedFiltersList.push(newFilter);
@@ -62,7 +51,7 @@ export default class DeckBuilder {
     }
 
     /*
-    Mètodes per a obtenir cartes per classe i per ID del caché de la sessió.
+    Mètodes per a obtenir cartes per determinat filtre -base- i per ID del caché de la sessió.
     */
     getCardById(id) {
         return this.cardsSessionCache.find(card => card.cardId == id);
@@ -71,13 +60,15 @@ export default class DeckBuilder {
         return this.cardsSessionCache.filter(card => card[this.relationSelectorsInCardAttrb[filterSelector]] == filterZero);
     }
 
+    /*
+    Mètodes per aplicar la resta de filtres de la cerca damunt del filtre base.
+    */
     filterCards(selector, value) {
         this.selectors[selector] = value;
-        let filteredCache = this.getCardsByFilterZero(this.selectorBase, this.selectors[this.selectorBase]);
+        let filteredCache = this.getCardsByFilterZero(this.selectorZero, this.selectors[this.selectorZero]);
         let filteredResult = this.avoidDuplicationAtRealocationOfFilterZero(filteredCache);
-
         const keysSelector = Object.keys(this.selectors);
-        keysSelector.splice(keysSelector.indexOf(this.selectorBase), 1);
+        keysSelector.splice(keysSelector.indexOf(this.selectorZero), 1);
         for (let key of keysSelector) {
             if (this.selectors[key] !== 'all') {
                 filteredResult = filteredResult.filter((cards) => cards[this.relationSelectorsInCardAttrb[key]] === this.selectors[key]);
@@ -108,7 +99,7 @@ export default class DeckBuilder {
                 newSelectorBase = {
                     [key]: this.selectors[key]
                 }
-                this.setSelectorZero(key);
+                this.selectorZero = key;
                 break;
             }
         }
